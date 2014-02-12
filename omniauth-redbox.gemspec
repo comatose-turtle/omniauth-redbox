@@ -16,7 +16,7 @@ Gem::Specification.new do |gem|
   gem.version       = OmniAuth::RedBox::VERSION
 
   gem.add_dependency 'omniauth', '~> 1.0'
-  gem.add_dependency 'omniauth-oauth2', '~> 1.1'
+  gem.add_dependency 'omniauth-oauth2', '~> 1.0'
   gem.add_development_dependency 'simplecov'
   gem.add_development_dependency 'webmock'
 end

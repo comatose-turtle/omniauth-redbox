@@ -2,7 +2,7 @@ require 'omniauth-oauth2'
 
 module OmniAuth
   module Strategies
-    class RedBox < OmniAuth::Strategies::OAuth2
+    class Redbox < OmniAuth::Strategies::OAuth2
       option :client_options, {
         :site => 'https://api.redbox.com/v5',
         :authorize_url => 'https://api.redbox.com/oauth2-13/authorize',
@@ -10,41 +10,24 @@ module OmniAuth
       }
 
       option :scope, 'rentalhistory'
+      option :provider_ignores_state, true
 
-      def request_phase
-        super
-      end
-      
-      def authorize_params
-        super.tap do |params|
-          %w[scope client_options].each do |v|
-            if request.params[v]
-              params[v.to_sym] = request.params[v]
-            end
-          end
-        end
-      end
+      uid { access_token.params['customer_number'] }
 
-      uid { raw_info['id'].to_s }
+      # info do
+      #   {
+      #     'nickname' => raw_info['login'],
+      #     'email' => raw_info['email'],
+      #     'name' => raw_info['name'],
+      #   }
+      # end
 
-      info do
-        {
-          'nickname' => raw_info['login'],
-          'email' => email,
-          'name' => raw_info['name'],
-        }
-      end
-
-      extra do
-        {:raw_info => raw_info}
-      end
-
-      def raw_info
-        access_token.options[:mode] = :query
-        @raw_info ||= access_token.get('customer').parsed
-      end
+      # def raw_info
+      #   # @raw_info ||= access_token.params
+      #   debugger
+      #   access_token.options[:mode] = :query
+      #   @raw_info ||= access_token.get("customer/#{uid}/rentalhistory").parsed
+      # end
     end
   end
 end
-
-OmniAuth.config.add_camelization 'redbox', 'RedBox'
